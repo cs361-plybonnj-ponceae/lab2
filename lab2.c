@@ -36,7 +36,7 @@ int main (int argc, char **argv) {
     }
 
     //Open the queue, creating if necessary
-    if ((mq_desc = mq_open(argv[1], O_RDWR, 0600, NULL)) < 0) {
+    if ((mq_desc = mq_open(argv[1], O_RDONLY, NULL)) < 0) {
         printf("Error opening message queue %s: %s\n", argv[1], strerror(errno));
         return 1;
     }
@@ -63,13 +63,41 @@ int main (int argc, char **argv) {
     }
     buffer[n] = '\0';
 
-    printf("Received message (<%ld> bytes):\n", n);
-    printf("\tMagic:\t<>\n");
-    printf("\tID:\t<>\n");
-    printf("\tTime:\t<>\n");
-    printf("\tData:\t<>\n");
+    for (int i = 0; i < 8; i++) {
+        msg.magic[i] = buffer[i];
+    }
 
-    printf("%s\n", buffer);
+ 
+    char * magic = "cs361lab";
+    if (strncmp(msg.magic, magic, 8) == 0) {
+        printf("Received message (<%ld> bytes):\n", n);
+        printf("\tMagic:\t<%s>\n", msg.magic);
+        printf("\tID:\t<>\n");
+        printf("\tTime:\t<");
+         for (int i = 11; i < 211; i++) {
+            printf("%c", buffer[i]);
+        }
+        printf(">\n");
+        printf("\tData:\t<");
+        for (int i = 211; i < 248; i++) {
+            printf("%c", buffer[i]);
+        }
+        printf(">\n");
+
+
+    } else {
+        printf("Received message (<%ld> bytes):\n", n);
+        printf("\tInvalid message\n");
+    }
+
+
+
+    
+
+
+
+
+   
 
     free(buffer);
     return 0;
